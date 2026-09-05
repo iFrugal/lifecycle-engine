@@ -9,7 +9,7 @@
 
   <artifactId>lifecycle-jdbc</artifactId>
   <name>lifecycle-jdbc</name>
-  <description>TODO</description>
+  <description>JDBC backend (DD-07, DD-11): state, inbox, audit and outbox in one transaction on a plain DataSource, plus a stored rule set source and a task store.</description>
 
   <dependencies>
     <dependency>
@@ -19,6 +19,46 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>lifecycle-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-tasks</artifactId>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-rules-yaml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

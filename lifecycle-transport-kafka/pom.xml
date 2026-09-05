@@ -9,7 +9,7 @@
 
   <artifactId>lifecycle-transport-kafka</artifactId>
   <name>lifecycle-transport-kafka</name>
-  <description>TODO</description>
+  <description>Kafka transport (DD-08, DD-09, DD-11): per-entity ordering by partition key, redelivery with a dead-letter topic, no delayed delivery.</description>
 
   <dependencies>
     <dependency>
@@ -19,6 +19,30 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>lifecycle-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-kafka</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

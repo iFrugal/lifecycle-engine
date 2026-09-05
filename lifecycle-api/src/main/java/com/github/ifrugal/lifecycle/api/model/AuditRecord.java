@@ -28,6 +28,7 @@ public record AuditRecord(
         Objects.requireNonNull(eventId, "eventId");
         Objects.requireNonNull(entity, "entity");
         Objects.requireNonNull(action, "action");
+        Objects.requireNonNull(actor, "actor");
         Objects.requireNonNull(outcome, "outcome");
         Objects.requireNonNull(at, "at");
     }

@@ -24,6 +24,7 @@ hazards (H1-H10) are referenced throughout.
 | 10 | Tasks | D8 | DECIDED | Optional module over the event mechanism. `task:` compiles to a `lifecycle.task.create` notification. Module owns claimants, completion and the deferred cross-entity signal. | [10-tasks.md](./10-tasks.md) |
 | 11 | Storage and transport SPIs | R4, R7 | DECIDED | `StateStore` (find / commit / appendDetached / countInState / outbox), `AuditQuery`, `Outbox`, `Transport` (publish / subscribe / supportsDelay). Engine surface: `handle`, `evaluate`, `available`. | [11-storage-and-transport-spi.md](./11-storage-and-transport-spi.md) |
 | 12 | Hazards and acceptance | H1-H10, brief §9 | DECIDED | Mechanism and named test for every hazard and every acceptance check. | [12-hazards-and-acceptance.md](./12-hazards-and-acceptance.md) |
+| 13 | Spring Boot starter | R11 | DECIDED | Optional adapter deps, explicit `lifecycle.store` / `lifecycle.transport` selectors, bean-discovered guards, poll-based reload, actuator endpoint + health + metrics. | [13-spring-boot-starter.md](./13-spring-boot-starter.md) |
 
 ## Open items carried from the review
 - Real 73-transition reference rule set: not yet received. YAML schema stays *provisional* until it is.

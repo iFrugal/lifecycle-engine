@@ -28,7 +28,9 @@
   </modules>
 
   <properties>
-    <!-- Baseline is Java 25 (matches notification-service). Local build: export JAVA_HOME=$(brew --prefix openjdk@25)/libexec/openjdk.jdk/Contents/Home
+    <!-- Baseline is Java 25 (matches notification-service). Local build: JAVA_HOME must be a JDK 25 home; on
+         Homebrew that is $(brew prefix openjdk@25)/libexec/openjdk.jdk/Contents/Home, with the usual two leading
+         dashes on "prefix" (an XML comment may not contain them, which is why they are missing here).
          The parent signs on install; use -Dgpg.skip=true for local installs. On a JDK 21 machine: -Djava.version=21 -Djdk.version=21 -->
     <java.version>25</java.version>
     <jdk.version>25</jdk.version>

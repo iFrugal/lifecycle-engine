@@ -18,7 +18,7 @@ where events come from and where outputs go, is an adapter.
 | `lifecycle-mongo` | MongoDB: same four roles; multi-document transactions on a replica set, single-document fallback on standalone. |
 | `lifecycle-transport-kafka` | Kafka transport: topics by event kind, records keyed by entity, retry then dead-letter, notification consumer. |
 | `lifecycle-tasks` | Optional tasks module: stores `lifecycle.task.create` notifications as tasks, raises the deferred `onComplete` signal. |
-| `lifecycle-spring-boot-starter` | (phase 5) |
+| `lifecycle-spring-boot-starter` | One dependency and a `lifecycle.*` block: guards discovered as beans, rule sources from files/classpath/JDBC/Mongo, explicit `store` and `transport` selectors, reload on startup plus a poller, tasks, and an actuator endpoint, health indicator and Micrometer meters. |
 
 ## Design
 

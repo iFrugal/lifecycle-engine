@@ -1,0 +1,90 @@
+# Base rule set for the "order" entity (DD-04).
+# This is the YAML equivalent of SampleRules.order() in lifecycle-core's test sources: keep the two in sync.
+entityType: order
+initial: NEW
+maxHops: 16
+states: [NEW, PAID, FULFILLING, COMPLETED, CANCELLED, REFUND_PENDING, REFUNDED]
+
+transitions:
+  # Customer or the payments service marks an authorised payment; tells the (not yet known) shipment to prepare.
+  - id: order.pay
+    from: NEW
+    on: PAY
+    roles: [customer, payments-service]
+    when: { payment.status: AUTHORISED }
+    to: PAID
+    emit:
+      # No `to` -> a notification for the outside world.
+      - action: ReceiptRequested
+        payload: { orderId: $entity.id, amount: $payload.payment.amount }
+      # `to` -> a signal addressed to the shipment named in the incoming payload.
+      - action: PREPARE
+        to: { type: shipment, id: $payload.shipmentId }
+        payload: { orderId: $entity.id }
+
+  # Cancellable from any state except the terminal ones. `except` narrows the `*` wildcard in `from`.
+  - id: order.cancel
+    from: "*"
+    except: [COMPLETED, REFUNDED, CANCELLED]
+    on: CANCEL
+    roles: [customer, support]
+    to: CANCELLED
+    emit:
+      # Bare `$payload` forwards the whole consumed payload untouched.
+      - action: OrderCancelled
+        payload: $payload
+
+  # Signal raised by the shipment machine once it starts preparing (see shipment.yaml).
+  - id: order.on-shipment-prepared
+    from: PAID
+    on: SHIPMENT_PREPARED
+    roles: [lifecycle-engine]
+    to: FULFILLING
+
+  - id: order.complete
+    from: FULFILLING
+    on: COMPLETE
+    roles: [lifecycle-engine]
+    to: COMPLETED
+
+  # The D1 escape hatch: a guard registered in code decides whether the refund window is still open.
+  - id: order.request-refund
+    from: COMPLETED
+    on: REQUEST_REFUND
+    roles: [customer]
+    guard: refund-window-open
+    to: REFUND_PENDING
+    task:
+      name: approve-refund
+      assignTo: [finance]
+      onComplete: { action: REFUND_DECIDED }
+      payload: { reason: $payload.reason }
+    emit:
+      # A timer: `to: self` plus `after` becomes a delayed signal back to this same entity.
+      - action: ESCALATE
+        to: self
+        after: 72h
+
+  - id: order.refund-approved
+    from: REFUND_PENDING
+    on: REFUND_DECIDED
+    roles: [finance, lifecycle-tasks]
+    when: { decision: APPROVED }
+    to: REFUNDED
+
+  - id: order.refund-rejected
+    from: REFUND_PENDING
+    on: REFUND_DECIDED
+    roles: [finance, lifecycle-tasks]
+    when: { decision: REJECTED }
+    to: COMPLETED
+
+  # Fired by the 72h timer above if nobody acted on the refund request.
+  - id: order.escalate
+    from: REFUND_PENDING
+    on: ESCALATE
+    roles: [lifecycle-engine]
+    to: REFUND_PENDING
+    emit:
+      - action: RefundEscalated
+        payload: { orderId: $entity.id }

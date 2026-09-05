@@ -1,0 +1,42 @@
+# The order machine without the `after: 72h` timer edge. The Kafka transport has no timer queue and refuses to
+# start against rules that declare one (DD-09), so the Kafka slice test uses this pair of files instead.
+entityType: order
+initial: NEW
+maxHops: 16
+states: [NEW, PAID, FULFILLING, COMPLETED, CANCELLED]
+
+transitions:
+  - id: order.pay
+    from: NEW
+    on: PAY
+    roles: [customer, payments-service]
+    when: { payment.status: AUTHORISED }
+    to: PAID
+    emit:
+      - action: ReceiptRequested
+        payload: { orderId: $entity.id, amount: $payload.payment.amount }
+      - action: PREPARE
+        to: { type: shipment, id: $payload.shipmentId }
+        payload: { orderId: $entity.id }
+
+  - id: order.cancel
+    from: "*"
+    except: [COMPLETED, CANCELLED]
+    on: CANCEL
+    roles: [customer, support]
+    to: CANCELLED
+    emit:
+      - action: OrderCancelled
+        payload: $payload
+
+  - id: order.on-shipment-prepared
+    from: PAID
+    on: SHIPMENT_PREPARED
+    roles: [lifecycle-engine]
+    to: FULFILLING
+
+  - id: order.complete
+    from: FULFILLING
+    on: COMPLETE
+    roles: [lifecycle-engine]
+    to: COMPLETED

@@ -3,8 +3,12 @@ package com.github.ifrugal.lifecycle.core.registry;
 import com.github.ifrugal.lifecycle.api.rules.RuleSetDocument;
 import com.github.ifrugal.lifecycle.api.spi.DefinitionSource;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +34,15 @@ public final class CompositeDefinitionSource implements DefinitionSource {
         return all;
     }
 
+    /** SHA-256 over the member fingerprints, so the result has a fixed length whatever the members return. */
     @Override
     public String fingerprint() {
-        return sources.stream().map(DefinitionSource::fingerprint).collect(Collectors.joining("+"));
+        String joined = sources.stream().map(DefinitionSource::fingerprint).collect(Collectors.joining("+"));
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            return HexFormat.of().formatHex(md.digest(joined.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

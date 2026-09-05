@@ -44,6 +44,7 @@ public final class DefaultLifecycleEngine implements LifecycleEngine {
     private final Transport transport;
     private final TransitionResolver resolver;
     private final EngineConfig config;
+    private volatile String delayCheckedVersion;
 
     public DefaultLifecycleEngine(DefinitionRegistry registry, StateStore store, Transport transport, GuardRegistry guards) {
         this(registry, store, transport, guards, EngineConfig.defaults());
@@ -55,9 +56,23 @@ public final class DefaultLifecycleEngine implements LifecycleEngine {
         this.transport = transport;
         this.config = config;
         this.resolver = new TransitionResolver(guards, config.engineActor(), config.clock());
-        if (registry.isLoaded() && registry.requiresDelay() && !transport.supportsDelay()) {
-            throw new IllegalStateException("loaded rules declare `after` (timers) but the transport does not support delayed delivery");
+        if (registry.isLoaded()) {
+            guardDelay(registry.snapshot());
         }
+    }
+
+    /**
+     * A rule set that declares {@code after} needs a transport that can delay. Checked at construction and again
+     * whenever a new snapshot is first seen, so a reload after start-up is caught too. Loud, never silent.
+     */
+    private void guardDelay(Snapshot snap) {
+        if (snap.version().equals(delayCheckedVersion)) {
+            return;
+        }
+        if (registry.requiresDelay() && !transport.supportsDelay()) {
+            throw new IllegalStateException("rule snapshot " + snap.version() + " declares `after` (timers) but the transport does not support delayed delivery");
+        }
+        delayCheckedVersion = snap.version();
     }
 
     @Override
@@ -90,6 +105,7 @@ public final class DefaultLifecycleEngine implements LifecycleEngine {
 
     private Outcome handle(LifecycleEvent event, Set<String> inlineVisited) {
         Snapshot snap = registry.snapshot();
+        guardDelay(snap);
         Optional<Machine> machineOpt = snap.machine(event.entity().tenantId(), event.entity().type());
         StateRecord existing = store.find(event.entity()).orElse(null);
 

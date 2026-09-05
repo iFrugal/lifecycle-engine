@@ -1,0 +1,27 @@
+# Base rule set for the "shipment" entity (DD-04).
+# YAML equivalent of SampleRules.shipment(). No `maxHops` -> the engine default (32) applies.
+entityType: shipment
+initial: PENDING
+states: [PENDING, PREPARED, DELIVERED]
+
+transitions:
+  # Consumes the PREPARE signal raised by order.pay, then signals the order back that it can proceed.
+  - id: shipment.prepare
+    from: PENDING
+    on: PREPARE
+    roles: [lifecycle-engine]
+    to: PREPARED
+    emit:
+      - action: SHIPMENT_PREPARED
+        to: { type: order, id: $payload.orderId }
+        payload: { shipmentId: $entity.id }
+
+  - id: shipment.deliver
+    from: PREPARED
+    on: DELIVER
+    roles: [courier]
+    to: DELIVERED
+    emit:
+      - action: COMPLETE
+        to: { type: order, id: $payload.orderId }
+        payload: { shipmentId: $entity.id }

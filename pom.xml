@@ -25,6 +25,7 @@
     <module>lifecycle-jdbc</module>
     <module>lifecycle-mongo</module>
     <module>lifecycle-transport-kafka</module>
+    <module>lifecycle-spring-boot-starter</module>
   </modules>
 
   <properties>

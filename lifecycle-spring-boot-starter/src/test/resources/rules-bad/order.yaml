@@ -1,0 +1,12 @@
+# Deliberately broken: order.pay moves to a state that is not declared. The compiler reports it as a problem,
+# the reload is rejected, and with lifecycle.rules.reload.fail-fast=true the context refuses to start.
+entityType: order
+initial: NEW
+states: [NEW, PAID]
+
+transitions:
+  - id: order.pay
+    from: NEW
+    on: PAY
+    roles: [customer]
+    to: NOT_A_DECLARED_STATE

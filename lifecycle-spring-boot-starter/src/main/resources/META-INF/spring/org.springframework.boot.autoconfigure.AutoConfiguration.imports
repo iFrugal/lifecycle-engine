@@ -1,0 +1,6 @@
+com.github.ifrugal.lifecycle.starter.LifecycleJdbcAutoConfiguration
+com.github.ifrugal.lifecycle.starter.LifecycleMongoAutoConfiguration
+com.github.ifrugal.lifecycle.starter.LifecycleKafkaAutoConfiguration
+com.github.ifrugal.lifecycle.starter.LifecycleCoreAutoConfiguration
+com.github.ifrugal.lifecycle.starter.LifecycleTasksAutoConfiguration
+com.github.ifrugal.lifecycle.starter.LifecycleManagementAutoConfiguration

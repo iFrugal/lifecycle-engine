@@ -1,0 +1,31 @@
+# Tenant overlay for "acme" on top of the base order rule set (DD-05).
+# YAML equivalent of SampleRules.acmeOverlay(). Merge is by transition `id`, whole-transition replace, never
+# a deep merge: this file is what a reviewer must read to know the effective rule for this tenant.
+entityType: order
+tenant: acme
+# States are additive only; ON_HOLD does not exist in the base order machine.
+states: [ON_HOLD]
+
+transitions:
+  # Replaces the base order.request-refund outright: acme refunds are store-initiated and go to a store manager.
+  - id: order.request-refund
+    from: COMPLETED
+    on: REQUEST_REFUND
+    roles: [customer, store-manager]
+    when: { channel: STORE }
+    to: REFUND_PENDING
+    task:
+      name: approve-refund
+      assignTo: [store-manager]
+      onComplete: { action: REFUND_DECIDED }
+
+  # `disabled: true` removes the base transition of this id entirely; acme orders cannot be self-cancelled.
+  - id: order.cancel
+    disabled: true
+
+  # New transition, only meaningful for this tenant.
+  - id: order.hold
+    from: PAID
+    on: HOLD
+    roles: [store-manager]
+    to: ON_HOLD

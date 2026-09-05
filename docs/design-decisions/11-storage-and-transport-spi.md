@@ -46,3 +46,10 @@ Tables `lifecycle_state` (pk tenant/type/id, `version`), `lifecycle_inbox` (uniq
 Same four collections. Replica set → multi-document transaction. Standalone → inbox tail and pending outbox
 embedded in the state document so the conditional single-document update stays atomic; audit written second
 keyed by the state version so a crash between the two is repaired on the next commit. Health reports the mode.
+
+Under contention MongoDB reports a lost race inside a transaction as a `TransientTransactionError` (write
+conflict). The store retries the whole transaction at most three times with a short jittered backoff and then
+returns `VersionMismatch`, because a write conflict on the state document *is* a version conflict in DD-07's
+terms; the dispatcher re-reads and retries. Retrying forever was measured to livelock eight threads on one
+entity. A duplicate inbox key inside a transaction may also surface as a write conflict, so the inbox is read
+before it is inserted.

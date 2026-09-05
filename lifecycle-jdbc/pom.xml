@@ -11,6 +11,11 @@
   <name>lifecycle-jdbc</name>
   <description>JDBC backend (DD-07, DD-11): state, inbox, audit and outbox in one transaction on a plain DataSource, plus a stored rule set source and a task store.</description>
 
+  <properties>
+    <!-- Not managed by the root pom; resolved from Maven Central maven-metadata.xml on 2026-09-05. -->
+    <mysql-connector-j.version>26.7.0</mysql-connector-j.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -48,6 +53,17 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-mysql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>${mysql-connector-j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

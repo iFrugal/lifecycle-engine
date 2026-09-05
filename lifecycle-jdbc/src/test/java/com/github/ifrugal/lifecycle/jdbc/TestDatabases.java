@@ -38,6 +38,15 @@ final class TestDatabases {
         return ds;
     }
 
+    /** A plain driver DataSource against a running MySQL. */
+    static DataSource mysql(String url, String user, String password) {
+        com.mysql.cj.jdbc.MysqlDataSource ds = new com.mysql.cj.jdbc.MysqlDataSource();
+        ds.setUrl(url);
+        ds.setUser(user);
+        ds.setPassword(password);
+        return ds;
+    }
+
     static void truncateAll(DataSource ds) {
         execute(ds, "delete from lifecycle_state");
         execute(ds, "delete from lifecycle_inbox");

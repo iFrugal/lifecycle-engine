@@ -14,8 +14,10 @@ where events come from and where outputs go, is an adapter.
 | `lifecycle-core` | Rule compiler and validators, pure `TransitionResolver`, `DefaultLifecycleEngine`, `DefinitionRegistry` with tenant overlays, in-memory store and transport, Mermaid renderer. Depends on api and slf4j only. |
 | `lifecycle-rules-yaml` | YAML/JSON parser and file source. |
 | `lifecycle-json` | Jackson codec for the envelope and audit records, shared by transports and stores. |
-| `lifecycle-jdbc`, `lifecycle-mongo` | (phase 3) stored rule source, atomic commit, outbox relay. |
-| `lifecycle-transport-kafka`, `lifecycle-tasks` | (phase 4) |
+| `lifecycle-jdbc` | PostgreSQL / MySQL / H2: atomic commit store, audit query, outbox relay, stored rule source + admin, task store. Schemas under `src/main/resources/db`. |
+| `lifecycle-mongo` | MongoDB: same four roles; multi-document transactions on a replica set, single-document fallback on standalone. |
+| `lifecycle-transport-kafka` | Kafka transport: topics by event kind, records keyed by entity, retry then dead-letter, notification consumer. |
+| `lifecycle-tasks` | Optional tasks module: stores `lifecycle.task.create` notifications as tasks, raises the deferred `onComplete` signal. |
 | `lifecycle-spring-boot-starter` | (phase 5) |
 
 ## Design

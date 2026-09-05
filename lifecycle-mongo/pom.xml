@@ -9,7 +9,9 @@
 
   <artifactId>lifecycle-mongo</artifactId>
   <name>lifecycle-mongo</name>
-  <description>TODO</description>
+  <description>MongoDB backend (DD-07, DD-11): state, inbox, audit and outbox via mongodb-driver-sync, with a
+    single multi-document transaction on a replica set and a documented single-document fallback for a
+    standalone server, plus a stored rule set source and a task store.</description>
 
   <dependencies>
     <dependency>
@@ -19,6 +21,40 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>lifecycle-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-tasks</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lifecycle-rules-yaml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-mongodb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

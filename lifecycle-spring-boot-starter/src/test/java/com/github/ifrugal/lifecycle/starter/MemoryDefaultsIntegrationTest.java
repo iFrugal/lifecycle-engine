@@ -115,7 +115,10 @@ class MemoryDefaultsIntegrationTest {
         Outcome.Applied applied = (Outcome.Applied) outcome;
         assertThat(applied.transitionId()).isEqualTo("order.pay");
         assertThat(applied.to()).isEqualTo("PAID");
-        assertThat(store.find(EntityRef.of("order", "o-handle")).orElseThrow().state()).isEqualTo("PAID");
+        // order.pay signals the shipment over the transport and the shipment signals back, so the stored state
+        // is PAID only until that cascade lands. Wait for it, then assert the deterministic end state.
+        assertThat(transport.awaitIdle(Duration.ofSeconds(5))).isTrue();
+        assertThat(store.find(EntityRef.of("order", "o-handle")).orElseThrow().state()).isEqualTo("FULFILLING");
     }
 
     @Test
@@ -169,7 +172,9 @@ class MemoryDefaultsIntegrationTest {
     @Test
     void counts_outcomes_reloads_and_the_outbox_backlog() {
         engine.handle(Events.pay("o-metered", "s-metered"));
-        // A second PAY on the same order cannot match from PAID, so it is refused and counted with its reason.
+        // Let the cross-entity cascade settle first; a PAY racing the cascade's commit would be a version
+        // conflict, not a refusal. From FULFILLING a second PAY cannot match, so it is refused with its reason.
+        assertThat(transport.awaitIdle(Duration.ofSeconds(5))).isTrue();
         engine.handle(Events.action("order", "o-metered", "PAY", "customer",
                 Map.of("payment", Map.of("status", "AUTHORISED"))));
 

@@ -1,5 +1,9 @@
 # lifecycle-engine
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=iFrugal_lifecycle-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=iFrugal_lifecycle-engine)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=iFrugal_lifecycle-engine&metric=coverage)](https://sonarcloud.io/summary/new_code?id=iFrugal_lifecycle-engine)
+[![CI](https://github.com/iFrugal/lifecycle-engine/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/iFrugal/lifecycle-engine/actions/workflows/ci.yml)
+
 A declarative lifecycle (state machine) engine. Rules live in reviewable data, outputs are events, and the
 engine does not know or care how those events reach it.
 

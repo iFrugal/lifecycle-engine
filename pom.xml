@@ -16,6 +16,15 @@
   <description>Declarative, entity-agnostic, transport-agnostic lifecycle (state machine) engine whose rules live in reviewable data.</description>
   <url>https://github.com/iFrugal/lifecycle-engine</url>
 
+  <!-- Explicit scm: without it Maven inherits the parent's and appends this artifactId to the URL, and
+       release:prepare then pushes to github.com/iFrugal/iFrugal-parent.git/lifecycle-engine, which does not exist. -->
+  <scm>
+    <connection>scm:git:https://x-access-token:${env.GITHUB_TOKEN}@github.com/iFrugal/lifecycle-engine.git</connection>
+    <developerConnection>scm:git:https://x-access-token:${env.GITHUB_TOKEN}@github.com/iFrugal/lifecycle-engine.git</developerConnection>
+    <url>https://github.com/iFrugal/lifecycle-engine</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <modules>
     <module>lifecycle-api</module>
     <module>lifecycle-core</module>

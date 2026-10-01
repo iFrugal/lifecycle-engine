@@ -75,6 +75,7 @@ jobs:
         run: ./mvnw -B -ntp -U clean verify -Dgpg.skip=true
 
       - name: Release — prepare & perform
+        id: release
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_TOKEN:    ${{ secrets.CENTRAL_TOKEN }}
@@ -104,6 +105,11 @@ jobs:
             "${VERSION_ARGS[@]}" \
             release:clean release:prepare
 
+          # release:prepare records the tag it created; release:perform deletes release.properties, so read it now.
+          TAG="$(grep '^scm.tag=' release.properties | cut -d= -f2-)"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Released tag: ${TAG}"
+
           if [[ "${{ inputs.dry-run }}" != "true" ]]; then
             ./mvnw -B -ntp \
               -s "$HOME/.m2/settings.xml" \
@@ -115,6 +121,8 @@ jobs:
         if: ${{ inputs.dry-run != true }}
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ github.ref_name }}
+          # The tag release:prepare created (the project version), never the branch name.
+          tag_name: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.tag }}
           generate_release_notes: true
           fail_on_unmatched_files: false
